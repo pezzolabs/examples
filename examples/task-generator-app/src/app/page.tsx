@@ -15,6 +15,7 @@ import {
 const { Content } = Layout;
 import * as apiClient from "./lib/apiClient";
 import { useState } from "react";
+import { Footer } from "antd/es/layout/layout";
 
 interface FormInputs {
   goal: string;
@@ -141,6 +142,11 @@ export default function Home() {
             </>
           )}
         </Card>
+        <Footer>
+          <Typography.Paragraph style={{ opacity: 0.5, textAlign: "center" }}>
+            Made with ❤️ by{" "} <a href="https://pezzo.ai" target="_blank">Pezzo</a>
+          </Typography.Paragraph>
+        </Footer>
       </Content>
     </div>
   );
