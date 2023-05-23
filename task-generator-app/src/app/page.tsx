@@ -19,7 +19,7 @@ import { Footer } from "antd/es/layout/layout";
 
 interface FormInputs {
   goal: string;
-  numVerses: number;
+  numTasks: number;
 }
 
 export default function Home() {
@@ -36,7 +36,7 @@ export default function Home() {
     try {
       const { tasks } = await apiClient.generateTasks(
         values.goal,
-        values.numVerses
+        values.numTasks
       );
       setTasks(tasks);
     } catch (error) {
@@ -64,6 +64,12 @@ export default function Home() {
           <div style={{ textAlign: "center" }}>
             <Typography.Title level={1} style={{ marginBottom: 0 }}>
               Taskly 🦾
+            </Typography.Title>
+            <Typography.Title
+              level={2}
+              style={{ marginTop: 20, fontSize: 20, fontWeight: 400 }}
+            >
+              The limitless AI task generator
             </Typography.Title>
           </div>
 
@@ -144,7 +150,10 @@ export default function Home() {
         </Card>
         <Footer>
           <Typography.Paragraph style={{ opacity: 0.5, textAlign: "center" }}>
-            Made with ❤️ by{" "} <a href="https://pezzo.ai" target="_blank">Pezzo</a>
+            Made with ❤️ by{" "}
+            <a href="https://pezzo.ai" target="_blank">
+              Pezzo
+            </a>
           </Typography.Paragraph>
         </Footer>
       </Content>
