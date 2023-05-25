@@ -4,9 +4,9 @@ import { NextResponse } from "next/server";
 
 // Initialize the Pezzo client
 const pezzo = new Pezzo({
-  serverUrl: "http://localhost:3000",
-  environment: "development",
+  serverUrl: process.env.PEZZO_SERVER_URL || "https://api.pezzo.ai",
   apiKey: process.env.PEZZO_API_KEY,
+  environment: process.env.PEZZO_ENVIRONMENT || "development",
 });
 
 // Initialize the OpenAI executor
