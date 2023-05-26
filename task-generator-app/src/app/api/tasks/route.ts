@@ -6,7 +6,6 @@ import { NextResponse } from "next/server";
 const pezzo = new Pezzo({
   serverUrl: process.env.PEZZO_SERVER_URL || "https://api.pezzo.ai",
   apiKey: process.env.PEZZO_API_KEY,
-  environment: process.env.PEZZO_ENVIRONMENT || "development",
 });
 
 // Initialize the OpenAI executor
@@ -29,6 +28,7 @@ export async function POST(request: Request) {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
+    console.log('error', error);
     let message;
 
     if (error.response?.errors) {
