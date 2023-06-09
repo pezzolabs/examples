@@ -6,6 +6,7 @@ import { NextResponse } from "next/server";
 const pezzo = new Pezzo({
   serverUrl: process.env.PEZZO_SERVER_URL || "https://api.pezzo.ai",
   apiKey: process.env.PEZZO_API_KEY,
+  environment: "Production",
 });
 
 // Initialize the OpenAI executor
