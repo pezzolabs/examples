@@ -9,7 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@pezzo/client": "^0.2.0",
     "@pezzo/integrations": "^0.1.7",
     "@types/node": "20.2.3",
     "@types/react": "18.2.6",
@@ -19,7 +18,7 @@
     "eslint": "8.41.0",
     "eslint-config-next": "13.4.3",
     "next": "13.4.3",
-    "openai": "^3.2.1",
+    "openai": "^3.3.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "reset-css": "^5.0.1",

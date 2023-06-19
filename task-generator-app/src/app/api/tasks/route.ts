@@ -1,6 +1,6 @@
 import { Pezzo } from "@pezzo/client";
-import { OpenAIExecutor } from "@pezzo/integrations";
 import { NextResponse } from "next/server";
+import { Configuration } from "openai";
 
 // Initialize the Pezzo client
 const pezzo = new Pezzo({
@@ -9,22 +9,37 @@ const pezzo = new Pezzo({
   environment: "Production",
 });
 
-// Initialize the OpenAI executor
-const openai = new OpenAIExecutor(pezzo, {
+// Initialize OpenAI
+const openai = new pezzo.OpenAIApi(new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
-});
+}));
 
 export async function POST(request: Request) {
   const body = await request.json();
   const { goal, numTasks } = body;
 
   try {
-    const data = await openai.run("GenerateTasks", {
-      goal,
-      numTasks,
+    const prompt = await pezzo.getPrompt("TaskManager", {
+      variables: {
+        goal,
+        numTasks
+      }
     });
+    
+    let result;
+    
+    try {
+      const settings = prompt.getChatCompletionSettings();
+      result = await openai.createChatCompletion(settings);
+    } catch (error) {
+      console.log(error.response.data.message);
+    }
 
-    const parsed = JSON.parse(data.result);
+    const parsed = JSON.parse(result.data.choices[0].message.content);
+
+    // const execution = await pezzo.reportPromptExecution(
+      
+    // )
     return NextResponse.json(parsed, {
       headers: { "Content-Type": "application/json" },
     });
