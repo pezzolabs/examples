@@ -9,8 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@pezzo/client": "^0.2.0",
-    "@pezzo/integrations": "^0.1.7",
+    "@pezzo/client": "^0.2.3",
+    "@pezzo/integrations": "^0.1.10",
     "@types/node": "20.2.3",
     "@types/react": "18.2.6",
     "@types/react-dom": "18.2.4",
