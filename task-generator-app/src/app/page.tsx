@@ -22,15 +22,11 @@ interface FormInputs {
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [answer, setTasks] = useState<string | null>(
-    null
-  );
 
-  const { messages, input, append } = useChat({ api: "/api/research" });
+  const { messages, append } = useChat({ api: "/api/research" });
 
   const handleFormFinish = async (values: FormInputs) => {
     setError(null);
-    setTasks(null);
     setIsLoading(true);
     try {
       append({ role: "user", content: values.question });

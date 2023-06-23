@@ -6,7 +6,7 @@ export const runtime = "edge";
 
 export async function POST(request: Request) {
   const body = await request.json();
-  const { document, question } = body;
+  const { document, question, messages } = body;
 
   let prompt;
 
@@ -31,8 +31,7 @@ export async function POST(request: Request) {
 
   try {
     const settings = prompt.getChatCompletionSettings();
-    const response = await openai.createChatCompletion({ ...settings, stream: true });
-    console.log("response", response)
+    const response = await openai.createChatCompletion({ ...settings, stream: true, messages });
     const stream = OpenAIStream(response);
     return new StreamingTextResponse(stream);
   } catch (error) {
