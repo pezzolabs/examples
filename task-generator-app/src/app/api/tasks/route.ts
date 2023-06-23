@@ -1,4 +1,4 @@
-import { Pezzo } from "@pezzo/client";
+import { Pezzo, PezzoOpenAIApi } from "@pezzo/client";
 import { NextResponse } from "next/server";
 import { Configuration } from "openai";
 
@@ -10,53 +10,57 @@ const pezzo = new Pezzo({
 });
 
 // Initialize OpenAI
-const openai = new pezzo.OpenAIApi(new Configuration({
+const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
-}));
+});
+
+const openai = new PezzoOpenAIApi(pezzo, configuration);
 
 export async function POST(request: Request) {
   const body = await request.json();
   const { goal, numTasks } = body;
 
+  let prompt, settings;
+
   try {
-    const prompt = await pezzo.getPrompt("TaskManager", {
+    prompt = await pezzo.getPrompt("GenerateTasks", {
       variables: {
         goal,
-        numTasks
-      }
+        numTasks,
+      },
     });
-    
-    let result;
-    
-    try {
-      const settings = prompt.getChatCompletionSettings();
-      result = await openai.createChatCompletion(settings);
-    } catch (error) {
-      console.log(error.response.data.message);
-    }
+    settings = prompt.getChatCompletionSettings();
+  } catch (error) {
+    console.log("Could not get prompt", error);
+  }
 
+  let result;
+
+  try {
+    result = await openai.createChatCompletion(
+      { ...settings, max_tokens: 1200 },
+      { headers: { "Content-Type": "application/json" } }
+    );
     const parsed = JSON.parse(result.data.choices[0].message.content);
 
-    // const execution = await pezzo.reportPromptExecution(
-      
-    // )
     return NextResponse.json(parsed, {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.log('error', error);
+    console.log("Error parsing response", error);
     let message;
 
     if (error.response?.errors) {
       // Handle Pezzo Server GraphQL errors
       message = error.response.errors[0].message;
     } else {
-      message = "Prompt execution failed. Check the Pezzo History tab for more information.";
+      message =
+        "Prompt execution failed. Check the Pezzo History tab for more information.";
     }
 
     return NextResponse.json(
       {
-        message
+        message,
       },
       {
         status: 500,
