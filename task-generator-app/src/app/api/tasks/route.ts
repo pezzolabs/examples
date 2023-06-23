@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { pezzo, openai } from "../../lib/pezzo";
 
+
 export async function POST(request: Request) {
   const body = await request.json();
   const { goal, numTasks } = body;
@@ -30,7 +31,7 @@ export async function POST(request: Request) {
   try {
     settings = prompt.getChatCompletionSettings();
     result = await openai.createChatCompletion(settings);
-    
+
     const parsed = JSON.parse(result.data.choices[0].message.content);
     return NextResponse.json(parsed, {
       headers: { "Content-Type": "application/json" },

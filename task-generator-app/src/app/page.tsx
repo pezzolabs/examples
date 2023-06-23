@@ -4,18 +4,15 @@ import {
   Alert,
   Button,
   Card,
-  Checkbox,
   Form,
   Input,
-  InputNumber,
   Layout,
-  List,
   Typography,
 } from "antd";
 const { Content } = Layout;
-import * as apiClient from "./lib/apiClient";
 import { useState } from "react";
 import { Footer } from "antd/es/layout/layout";
+import { useChat } from "ai/react";
 
 interface FormInputs {
   document: string;
@@ -29,16 +26,14 @@ export default function Home() {
     null
   );
 
+  const { messages, input, append } = useChat({ api: "/api/research" });
+
   const handleFormFinish = async (values: FormInputs) => {
     setError(null);
     setTasks(null);
     setIsLoading(true);
     try {
-      const answer = await apiClient.askQuestion(
-        values.document,
-        values.question
-      );
-      setTasks(answer);
+      append({ role: "user", content: values.question });
     } catch (error) {
       setError((error as any).response.data.message);
     }
@@ -119,11 +114,12 @@ export default function Home() {
             </Form.Item>
           </Form>
 
-          {answer && (
-            <>
-              <pre>{answer}</pre>
-            </>
-          )}
+          {messages.map(m => (
+            <div key={m.id}>
+              {m.content}
+            </div>
+          ))
+          }
         </Card>
         <Footer>
           <Typography.Paragraph style={{ opacity: 0.5, textAlign: "center" }}>

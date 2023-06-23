@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server";
 import { pezzo, openai } from "../../lib/pezzo";
+import { OpenAIStream, StreamingTextResponse } from "ai";
+
+export const runtime = "edge";
 
 export async function POST(request: Request) {
   const body = await request.json();
   const { document, question } = body;
 
-  let prompt, settings;
+  let prompt;
 
   try {
     prompt = await pezzo.getPrompt("ResearchDocument", {
@@ -15,6 +18,7 @@ export async function POST(request: Request) {
       },
     });
   } catch (error) {
+    console.error("Could not get prompt from Pezzo", error)
     return NextResponse.json(
       {
         message: "Could not get prompt from Pezzo",
@@ -25,16 +29,12 @@ export async function POST(request: Request) {
     );
   }
 
-  let result;
-
   try {
-    settings = prompt.getChatCompletionSettings();
-    result = await openai.createChatCompletion(settings);
-    
-    const content = result.data.choices[0].message.content;
-    return NextResponse.json(content, {
-      headers: { "Content-Type": "application/json" },
-    });
+    const settings = prompt.getChatCompletionSettings();
+    const response = await openai.createChatCompletion({ ...settings, stream: true });
+    console.log("response", response)
+    const stream = OpenAIStream(response);
+    return new StreamingTextResponse(stream);
   } catch (error) {
     console.log("Error parsing response", error);
     let message;
