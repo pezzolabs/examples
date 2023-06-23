@@ -18,14 +18,14 @@ import { useState } from "react";
 import { Footer } from "antd/es/layout/layout";
 
 interface FormInputs {
-  document: string;
-  question: string;
+  goal: string;
+  numTasks: number;
 }
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [answer, setTasks] = useState<string | null>(
+  const [tasks, setTasks] = useState<apiClient.TasksResult["tasks"] | null>(
     null
   );
 
@@ -34,11 +34,11 @@ export default function Home() {
     setTasks(null);
     setIsLoading(true);
     try {
-      const answer = await apiClient.askQuestion(
-        values.document,
-        values.question
+      const { tasks } = await apiClient.generateTasks(
+        values.goal,
+        values.numTasks
       );
-      setTasks(answer);
+      setTasks(tasks);
     } catch (error) {
       setError((error as any).response.data.message);
     }
@@ -63,13 +63,13 @@ export default function Home() {
         >
           <div style={{ textAlign: "center" }}>
             <Typography.Title level={1} style={{ marginBottom: 0 }}>
-              AI Researcher 🔎
+              Taskly 🦾
             </Typography.Title>
             <Typography.Title
               level={2}
               style={{ marginTop: 20, fontSize: 20, fontWeight: 400 }}
             >
-              The limitless AI researcher
+              The limitless AI task generator
             </Typography.Title>
           </div>
 
@@ -86,7 +86,8 @@ export default function Home() {
           )}
 
           <Typography.Paragraph style={{ textAlign: "center" }}>
-            Provide a document, ask a question, and I'll find the answer!
+            Let me know your goal and I'll generate you some tasks, so you can
+            get started right away!
           </Typography.Paragraph>
 
           <Form
@@ -96,32 +97,54 @@ export default function Home() {
             onFinish={handleFormFinish}
           >
             <Form.Item
-              name="document"
-              label="Document"
+              name="goal"
+              label="Goal"
               rules={[
                 { required: true, message: "This field is required" },
+                { max: 250, message: "Maximum 250 characters" },
               ]}
             >
-              <Input placeholder="Paste a chunk of text here" />
+              <Input placeholder="e.g. Bathroom Renovation Project" />
             </Form.Item>
             <Form.Item
-              name="question"
-              label="Question"
-              rules={[
-                { required: true, message: "This field is required" },
-              ]}            >
-              <Input placeholder="Question about your text here" />
+              name="numTasks"
+              label="Number of tasks"
+              initialValue={5}
+              rules={[{ required: true, message: "This field is required" }]}
+            >
+              <InputNumber min={1} max={8} placeholder="1-4" />
             </Form.Item>
             <Form.Item style={{ display: "flex", justifyContent: "flex-end" }}>
               <Button loading={isLoading} type="primary" htmlType="submit">
-                Ask Question
+                Generate Tasks ⚡️
               </Button>
             </Form.Item>
           </Form>
 
-          {answer && (
+          {tasks && (
             <>
-              <pre>{answer}</pre>
+              <hr style={{ marginTop: 20, marginBottom: 20, opacity: 0.2 }} />
+              <>
+                <Typography.Title level={3} style={{ textAlign: "center" }}>
+                  Your Tasks
+                </Typography.Title>
+                <List
+                  itemLayout="horizontal"
+                  dataSource={tasks.map((task: string) => ({ task }))}
+                  renderItem={(item, index) => (
+                    <List.Item key={index}>
+                      <List.Item.Meta
+                        avatar={
+                          <>
+                            <Checkbox />
+                          </>
+                        }
+                        description={item.task}
+                      />
+                    </List.Item>
+                  )}
+                />
+              </>
             </>
           )}
         </Card>

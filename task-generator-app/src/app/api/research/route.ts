@@ -3,15 +3,15 @@ import { pezzo, openai } from "../../lib/pezzo";
 
 export async function POST(request: Request) {
   const body = await request.json();
-  const { goal, numTasks } = body;
+  const { document, question } = body;
 
   let prompt, settings;
 
   try {
-    prompt = await pezzo.getPrompt("GenerateTasks", {
+    prompt = await pezzo.getPrompt("ResearchDocument", {
       variables: {
-        goal,
-        numTasks,
+        document,
+        question,
       },
     });
   } catch (error) {
@@ -31,8 +31,8 @@ export async function POST(request: Request) {
     settings = prompt.getChatCompletionSettings();
     result = await openai.createChatCompletion(settings);
     
-    const parsed = JSON.parse(result.data.choices[0].message.content);
-    return NextResponse.json(parsed, {
+    const content = result.data.choices[0].message.content;
+    return NextResponse.json(content, {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {

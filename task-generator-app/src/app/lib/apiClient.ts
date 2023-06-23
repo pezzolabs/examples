@@ -1,17 +1,13 @@
 import axios from "axios";
 
-export interface TasksResult {
-  tasks: string[];
-}
-
-export async function generateTasks(
-  goal: string,
-  numTasks: number
-): Promise<TasksResult> {
-  const { data } = await axios.post("/api/tasks", {
-    goal,
-    numTasks,
+export async function askQuestion(
+  document: string,
+  question: string
+) {
+  const { data } = await axios.post("/api/research", {
+    document,
+    question
   });
 
-  return data as TasksResult;
+  return data;
 }
